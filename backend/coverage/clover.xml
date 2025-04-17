@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1743502933711" clover="3.2.0">
+  <project timestamp="1743502933711" name="All files">
+    <metrics statements="39" coveredstatements="36" conditionals="25" coveredconditionals="19" methods="11" coveredmethods="8" elements="75" coveredelements="63" complexity="0" loc="39" ncloc="39" packages="1" files="2" classes="2"/>
+    <file name="builds.js" path="C:\Users\Zsigmond Artur\Desktop\MPP_lab\PC_BUILDING\my-pc-builder-app\backend\builds.js">
+      <metrics statements="34" coveredstatements="32" conditionals="18" coveredconditionals="13" methods="10" coveredmethods="7"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="8" count="2" type="stmt"/>
+      <line num="9" count="2" type="stmt"/>
+      <line num="10" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="11" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="12" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="13" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="14" count="2" type="stmt"/>
+      <line num="18" count="1" type="stmt"/>
+      <line num="20" count="2" type="stmt"/>
+      <line num="21" count="2" type="stmt"/>
+      <line num="22" count="2" type="stmt"/>
+      <line num="28" count="1" type="stmt"/>
+      <line num="29" count="1" type="stmt"/>
+      <line num="30" count="1" type="cond" truecount="3" falsecount="1"/>
+      <line num="31" count="0" type="stmt"/>
+      <line num="33" count="1" type="stmt"/>
+      <line num="34" count="1" type="stmt"/>
+      <line num="38" count="1" type="stmt"/>
+      <line num="39" count="1" type="stmt"/>
+      <line num="40" count="1" type="cond" truecount="3" falsecount="1"/>
+      <line num="41" count="0" type="stmt"/>
+      <line num="43" count="1" type="stmt"/>
+      <line num="44" count="1" type="stmt"/>
+      <line num="49" count="1" type="stmt"/>
+      <line num="50" count="1" type="stmt"/>
+      <line num="51" count="1" type="cond" truecount="2" falsecount="0"/>
+      <line num="52" count="1" type="stmt"/>
+      <line num="54" count="1" type="stmt"/>
+      <line num="59" count="1" type="stmt"/>
+    </file>
+    <file name="validate.js" path="C:\Users\Zsigmond Artur\Desktop\MPP_lab\PC_BUILDING\my-pc-builder-app\backend\validate.js">
+      <metrics statements="5" coveredstatements="4" conditionals="7" coveredconditionals="6" methods="1" coveredmethods="1"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="3" type="stmt"/>
+      <line num="4" count="3" type="cond" truecount="6" falsecount="1"/>
+      <line num="5" count="0" type="stmt"/>
+      <line num="8" count="3" type="stmt"/>
+    </file>
+  </project>
+</coverage>
