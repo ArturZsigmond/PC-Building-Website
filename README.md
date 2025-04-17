@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💻 PC Builder Web App
 
-## Getting Started
+This is a full-stack **PC Building Web App** that allows users to build and customize their dream PC by selecting components like CPU, GPU, RAM, and Case. The app also provides filtering, sorting, price calculation, and dynamic display of statistics with charts and pagination.
 
-First, run the development server:
+## ✨ Features
+
+- Build and save custom PC configurations
+- Hover previews for component selection
+- Filtering by CPU manufacturer
+- Sorting by RAM size
+- Real-time price calculation
+- Paginated PC builds list
+- Bar chart showing GPU type distribution
+- Master/Detail UI design
+- Fully in-memory CRUD operations
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js + Tailwind CSS
+- **Backend:** Node.js (Express) *(if applicable)*
+- **Testing:** Jest / Playwright *(if applicable)*
+- **Charting:** Recharts
+
+## 🚀 Running the Project
+
+### 1. Clone the Repo
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/pc-builder.git
+cd pc-builder
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Start the Frontend
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Frontend will run at:  
+👉 `http://localhost:3000`
 
-## Learn More
+### 3. Start the Backend (if used)
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd backend
+npm install
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Backend will run at:  
+👉 `http://localhost:5000` (or whichever port you configured)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+> If this is a fully in-memory app with no backend, you can skip this step.
 
-## Deploy on Vercel
+## 🔄 Run on Two PCs Simultaneously (Dev Mode)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To test on multiple devices or with multiple users:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Make sure both PCs are on the same Wi-Fi/network.
+2. On **PC A (Host)**:
+    - Run the app as usual (`npm run dev`)
+    - Get the local IP address (e.g., `192.168.1.5`)
+    - If backend is used, make sure it listens on `0.0.0.0`
+3. On **PC B (Client)**:
+    - Open a browser and go to `http://192.168.1.5:3000` (replace with actual IP)
+
+> You may need to allow firewall access on PC A.
+
+## 📂 Folder Structure
+
+```
+pc-builder/
+│
+├── frontend/          # Next.js + Tailwind frontend
+│   └── pages/
+│   └── components/
+│   └── styles/
+│
+├── backend/           # Node.js backend (optional)
+│   └── routes/
+│   └── controllers/
+│
+├── tests/             # Unit & integration tests
+└── README.md
+```
+
+## 📜 License
+
+MIT License – Free to use and modify.
