@@ -6,43 +6,51 @@ const { WebSocketServer } = require('ws');
 const path = require('path');
 const fs = require('fs');
 
-const { router: buildsRoutes, builds } = require('./builds'); // ✅ destructure router + builds
+// ⬇️ NEW: Auth routes
+const authRoutes = require('./routes/auth');
+
+// Existing builds route (will be upgraded next)
+const { router: buildsRoutes, builds } = require('./builds');
 
 const app = express();
-const server = http.createServer(app); // 👈 wrap express in HTTP server
-  
+const server = http.createServer(app);
 
+// 🔧 Middleware setup
 app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // serve files
 
-// API routes
+// ⬇️ NEW: Auth routes mounted here
+app.use('/api', authRoutes);
+
+// Static file serving
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Build routes
 app.use('/api/builds', buildsRoutes);
 
-// post upload route
+// File upload route
 app.post('/api/upload', (req, res) => {
-    if (!req.files || !req.files.file) {
-      return res.status(400).send('No file uploaded');
-    }
-  
-    const uploadedFile = req.files.file;
-    const uploadPath = path.join(__dirname, 'uploads', uploadedFile.name);
-  
-    uploadedFile.mv(uploadPath, (err) => {
-      if (err) return res.status(500).send(err);
-      res.send({ filename: uploadedFile.name });
-    });
+  if (!req.files || !req.files.file) {
+    return res.status(400).send('No file uploaded');
+  }
+
+  const uploadedFile = req.files.file;
+  const uploadPath = path.join(__dirname, 'uploads', uploadedFile.name);
+
+  uploadedFile.mv(uploadPath, (err) => {
+    if (err) return res.status(500).send(err);
+    res.send({ filename: uploadedFile.name });
   });
-  
-  app.get("/uploads", (req, res) => {
-    const uploadDir = path.join(__dirname, "uploads");
-    fs.readdir(uploadDir, (err, files) => {
-      if (err) return res.status(500).json({ error: "Could not list files" });
-      res.json({ files });
-    });
+});
+
+app.get("/uploads", (req, res) => {
+  const uploadDir = path.join(__dirname, "uploads");
+  fs.readdir(uploadDir, (err, files) => {
+    if (err) return res.status(500).json({ error: "Could not list files" });
+    res.json({ files });
   });
-  
+});
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -56,11 +64,9 @@ server.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
 
-
 // WebSocket Setup
-const wss = new WebSocketServer({ server }); // attach WebSocket to same server
+const wss = new WebSocketServer({ server });
 
-// Dummy data pools
 const CPUS = ["Intel", "AMD"];
 const RAMS = ["16GB", "32GB"];
 const GPUS = ["RTX 5080", "RTX 5090", "GTX 690"];
@@ -93,7 +99,7 @@ function generateRandomBuild() {
 // ⏱️ Broadcast random builds every 5s
 setInterval(() => {
   const build = generateRandomBuild();
-  builds.push(build); // 🧠 Push to in-memory store
+  builds.push(build);
   const json = JSON.stringify(build);
 
   wss.clients.forEach((client) => {
