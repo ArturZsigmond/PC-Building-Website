@@ -1,6 +1,6 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
-const auth = require("../middleware/authMiddleware");
+const auth = require("../authMiddleware");
 
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -67,14 +67,13 @@ router.post("/", async (req, res) => {
       },
     });
 
-await prisma.log.create({
-  data: {
-    action: "CREATE",
-    build: { connect: { id: build.id } },   // ✅ use relation correctly
-    user: { connect: { id: req.user.userId } }
-  },
-});
-
+    await prisma.log.create({
+      data: {
+        action: "CREATE",
+        build: { connect: { id: build.id } },
+        user: { connect: { id: req.user.userId } },
+      },
+    });
 
     res.status(201).json(build);
   } catch (err) {
@@ -85,7 +84,7 @@ await prisma.log.create({
 
 // PUT /api/builds/:id
 router.put("/:id", async (req, res) => {
-   const id = req.params.id; // ✅ ensure number
+  const id = req.params.id;
 
   try {
     const existing = await prisma.build.findUnique({ where: { id } });
@@ -93,20 +92,19 @@ router.put("/:id", async (req, res) => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-
-await prisma.log.create({
-  data: {
-    action: "UPDATE",
-    build: { connect: { id } },   // ✅ use relation correctly
-    user: { connect: { id: req.user.userId } }
-  },
-});
-
-
     const updated = await prisma.build.update({
       where: { id },
       data: req.body,
     });
+
+    await prisma.log.create({
+      data: {
+        action: "UPDATE",
+        build: { connect: { id } },
+        user: { connect: { id: req.user.userId } },
+      },
+    });
+
     res.json(updated);
   } catch (err) {
     console.error("Error updating build:", err);
@@ -116,7 +114,7 @@ await prisma.log.create({
 
 // DELETE /api/builds/:id
 router.delete("/:id", async (req, res) => {
- const id = req.params.id;
+  const id = req.params.id;
 
   try {
     const existing = await prisma.build.findUnique({ where: { id } });
@@ -124,17 +122,15 @@ router.delete("/:id", async (req, res) => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-
-
-await prisma.log.create({
-  data: {
-    action: "DELETE",
-    build: { connect: { id } },   // ✅ use relation correctly
-    user: { connect: { id: req.user.userId } }
-  },
-});
-
     await prisma.build.delete({ where: { id } });
+
+    await prisma.log.create({
+      data: {
+        action: "DELETE",
+        build: { connect: { id } },
+        user: { connect: { id: req.user.userId } },
+      },
+    });
 
     res.json({ message: "Deleted" });
   } catch (err) {

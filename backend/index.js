@@ -11,6 +11,9 @@ const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin'); // ✅ ADD THIS
 const { router: buildsRoutes, builds } = require('./builds');
 const statsRouter = require("./stats"); // adjust path if needed
+const logsRouter = require("./routes/logs");
+
+
 
 
 
@@ -71,6 +74,7 @@ server.listen(PORT, () => {
 // Background job
 const { router: monitoredRouter } = require("./monitor");
 app.use("/api/monitored", monitoredRouter);
+app.use("/api/logs", logsRouter);
 
 
 // WebSocket Setup

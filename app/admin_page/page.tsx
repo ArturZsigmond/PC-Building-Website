@@ -12,38 +12,41 @@ interface GpuStat {
   count: number;
 }
 
+interface UserLog {
+  email: string;
+  action: string;
+  buildGpu: string;
+  timestamp: string;
+}
+
 export default function AdminPage() {
   const [monitored, setMonitored] = useState<MonitoredUser[]>([]);
   const [gpuStats, setGpuStats] = useState<GpuStat[]>([]);
+  const [logs, setLogs] = useState<UserLog[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // Fetch monitored users safely
     fetch("http://localhost:4000/api/monitored", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch monitored users");
-        return res.json();
-      })
+      .then((res) => res.json())
       .then(setMonitored)
-      .catch((err) => {
-        console.error("Monitored fetch error:", err.message);
-      });
+      .catch((err) => console.error("Monitored fetch error:", err.message));
 
-    // Fetch GPU stats safely
     fetch("http://localhost:4000/api/stats/heavy", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch GPU stats");
-        return res.json();
-      })
+      .then((res) => res.json())
       .then(setGpuStats)
-      .catch((err) => {
-        console.error("GPU stats fetch error:", err.message);
-      });
+      .catch((err) => console.error("GPU stats fetch error:", err.message));
+
+    fetch("http://localhost:4000/api/logs", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then(setLogs)
+      .catch((err) => console.error("Logs fetch error:", err.message));
   }, []);
 
   return (
@@ -90,6 +93,28 @@ export default function AdminPage() {
               </div>
             ))}
           </div>
+        )}
+      </section>
+
+      {/* User Activity Logs */}
+      <section>
+        <h2 className="text-2xl text-purple-300 mb-4">Recent User Activity</h2>
+        {logs.length === 0 ? (
+          <p className="text-gray-400">No activity logs found.</p>
+        ) : (
+          <ul className="space-y-2">
+            {logs.map((log, index) => (
+              <li
+                key={index}
+                className="p-3 bg-gray-800 rounded border border-purple-500"
+              >
+                <p><strong>User:</strong> {log.email}</p>
+                <p><strong>Action:</strong> {log.action}</p>
+                <p><strong>GPU:</strong> {log.buildGpu}</p>
+                <p><strong>Time:</strong> {new Date(log.timestamp).toLocaleString()}</p>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </div>
