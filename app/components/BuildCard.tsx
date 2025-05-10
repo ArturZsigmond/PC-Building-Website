@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-export default function BuildCard({ build, index, onDelete, onUpdate, highlight }: { build: any; index: number; onDelete: () => void; onUpdate: (updatedBuild: any) => void; highlight?: string }) {
+export default function BuildCard({ build, onDelete, onUpdate, highlight }: { build: any; onDelete: (id: number) => void; onUpdate: (updatedBuild: any) => void; highlight?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [cpu, setCpu] = useState(build.cpu);
   const [ram, setRam] = useState(build.ram);
@@ -64,7 +64,7 @@ export default function BuildCard({ build, index, onDelete, onUpdate, highlight 
               <h2 className="text-lg font-bold">{build.cpu} - {build.gpu}</h2>
               <p>RAM: {build.ram}</p>
               <p>Case: {build.case}</p>
-              <p>💸 Price: ${build.price}</p>
+              <p>Price: ${build.price}</p>
               <div className="w-full h-48 mt-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData}>
@@ -85,7 +85,7 @@ export default function BuildCard({ build, index, onDelete, onUpdate, highlight 
         <button className="bg-yellow-500 hover:bg-yellow-700 text-white p-2 rounded" onClick={() => setIsEditing(!isEditing)}>
           {isEditing ? "Cancel" : "Edit"}
         </button>
-        <button className="bg-red-500 hover:bg-red-700 text-white p-2 rounded" onClick={onDelete}>
+        <button className="bg-red-500 hover:bg-red-700 text-white p-2 rounded" onClick={() => onDelete(build.id)}>
           Delete
         </button>
       </div>

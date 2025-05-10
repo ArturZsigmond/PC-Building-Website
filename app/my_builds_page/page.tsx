@@ -1,10 +1,9 @@
 "use client";
-import React from "react";
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import BuildCard from "../components/BuildCard";
 import GPUChart from "../components/GPUChart";
 import { addToQueue } from "../utils/offlineQueue";
+import { syncOfflineQueue } from "../utils/syncQueue";
 
 export default function MyBuilds() {
   const [builds, setBuilds] = useState<any[]>([]);
@@ -15,15 +14,28 @@ export default function MyBuilds() {
   const [buildsPerPage, setBuildsPerPage] = useState(3);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/builds")
-      .then((res) => {
+    syncOfflineQueue();
+  }, []);
+
+  useEffect(() => {
+    const fetchBuilds = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch("http://localhost:4000/api/builds", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!res.ok) throw new Error("Server error");
-        return res.json();
-      })
-      .then((data) => setBuilds(data))
-      .catch((err) => {
+        const data = await res.json();
+        setBuilds(data);
+      } catch (err) {
         console.error("Failed to fetch builds", err);
-      });
+      }
+    };
+
+    fetchBuilds();
   }, []);
 
   const filteredBuilds = builds.filter(
@@ -61,47 +73,55 @@ export default function MyBuilds() {
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:4000");
-  
+
     socket.onmessage = (event) => {
       const newBuild = JSON.parse(event.data);
       setBuilds((prev) => [...prev, newBuild]);
     };
-  
-    return () => socket.close();
-  }, []);  
 
-  const handleDelete = async (index: number) => {
+    return () => socket.close();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:4000/api/builds/${index}`, {
+      const res = await fetch(`http://localhost:4000/api/builds/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) throw new Error("Delete failed");
     } catch {
-      addToQueue({ type: "delete", index });
-      alert("⚠️ You're offline or the server is down. This delete will sync later.");
+      addToQueue({ type: "delete", id });
+      alert("You're offline or the server is down. This delete will sync later.");
     }
 
-    setBuilds(builds.filter((_, i) => i !== index));
+    setBuilds(builds.filter((b) => b.id !== id));
   };
 
-  const handleUpdate = async (index: number, updatedBuild: any) => {
+  const handleUpdate = async (id: string, updatedBuild: any) => {
+    const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:4000/api/builds/${index}`, {
+      const res = await fetch(`http://localhost:4000/api/builds/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(updatedBuild),
       });
 
       if (!res.ok) throw new Error("Update failed");
     } catch {
-      addToQueue({ type: "update", data: updatedBuild, index });
-      alert("⚠️ You're offline or the server is down. This update will sync later.");
+      addToQueue({ type: "update", data: updatedBuild, id });
+      alert("You're offline or the server is down. This update will sync later.");
     }
 
-    const updatedBuilds = [...builds];
-    updatedBuilds[index] = updatedBuild;
-    setBuilds(updatedBuilds);
+    setBuilds((prev) =>
+      prev.map((b) => (b.id === id ? { ...b, ...updatedBuild } : b))
+    );
   };
 
   const prices = sortedBuilds.map((b) => b.price);
@@ -116,10 +136,7 @@ export default function MyBuilds() {
     return "max";
   };
 
-  const paginatedBuilds = sortedBuilds.slice(
-    0,
-    currentPage * buildsPerPage
-  );
+  const paginatedBuilds = sortedBuilds.slice(0, currentPage * buildsPerPage);
 
   return (
     <div className="p-8">
@@ -179,25 +196,20 @@ export default function MyBuilds() {
         <option value={10}>10</option>
       </select>
 
-      {/* Render Builds */}
-      {paginatedBuilds.map((build, index) => {
+      {paginatedBuilds.map((build) => {
         const highlight = getHighlight(build.price);
         return (
           <BuildCard
-            key={index}
+            key={build.id}
             build={build}
-            index={index}
-            onDelete={() => handleDelete(index)}
-            onUpdate={(updatedBuild) => handleUpdate(index, updatedBuild)}
+            onDelete={() => handleDelete(build.id)}
+            onUpdate={(updatedBuild) => handleUpdate(build.id, updatedBuild)}
             highlight={highlight}
           />
         );
       })}
 
-      {/* Trigger Element for Infinite Scroll */}
       <div id="scroll-trigger" className="h-12" />
-
-      {/* GPU Chart */}
       <div className="mt-12">
         <GPUChart key={builds.length} />
       </div>

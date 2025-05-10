@@ -4,8 +4,8 @@ export type OperationType = "add" | "update" | "delete";
 
 export interface QueuedOperation {
   type: OperationType;
-  data?: any;         
-  index?: number;
+  data?: any;
+  id?: string; // ✅ changed from `index` to `id`
 }
 
 export function addToQueue(operation: QueuedOperation) {
@@ -18,7 +18,6 @@ export function addToQueue(operation: QueuedOperation) {
   queue.push(operation);
   localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
 }
-
 
 export function getQueue(): QueuedOperation[] {
   if (typeof window === "undefined") return [];

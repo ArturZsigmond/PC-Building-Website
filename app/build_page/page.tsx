@@ -1,10 +1,8 @@
 "use client";
-import React from "react";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { addToQueue } from "../utils/offlineQueue";
-
 
 export default function BuildPC() {
   const router = useRouter();
@@ -14,7 +12,6 @@ export default function BuildPC() {
   const [pcCase, setPcCase] = useState("");
   const [lastSelectedPart, setLastSelectedPart] = useState<string | null>(null);
 
-  // Price mapping
   const prices: { [key: string]: number } = {
     Intel: 565,
     AMD: 550,
@@ -58,31 +55,35 @@ export default function BuildPC() {
       alert("Please select all components!");
       return;
     }
-  
+
     const totalPrice =
       (prices[cpu] || 0) +
       (prices[ram] || 0) +
       (prices[gpu] || 0) +
       (prices[pcCase] || 0);
-  
+
     const newBuild = { cpu, ram, gpu, case: pcCase, price: totalPrice };
-  
+
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:4000/api/builds", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(newBuild),
       });
-  
+
       if (!res.ok) throw new Error("Failed to save");
     } catch {
       addToQueue({ type: "add", data: newBuild });
-      alert("⚠️ You're offline or the server is down. Your build will sync later.");
+      alert("You're offline or the server is down. Your build will sync later.");
     }
-  
+
     router.push("/my_builds_page");
   };
-  
+
   return (
     <div className="flex justify-between w-full p-8">
       <div className="w-1/2 flex flex-col space-y-4">

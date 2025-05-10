@@ -8,39 +8,51 @@ datasource db {
 }
 
 model User {
-  id       Int               @id @default(autoincrement())
-  email    String            @unique
-  password String
-  role     String
-  builds   Build[]
-  logs     Log[]
-  monitoredBy MonitoredUser? @relation("MonitoredRelation")
+  id           String         @id @default(uuid())
+  email        String         @unique
+  password     String
+  role         Role           @default(USER)
+  builds       Build[]
+  logs         Log[]
+  monitoredBy  MonitoredUser?
 }
 
-
 model Build {
-  id     Int    @id @default(autoincrement())
+  id     String  @id @default(uuid())
   cpu    String
   ram    String
   gpu    String
   case   String
   price  Int
-  user   User   @relation(fields: [userId], references: [id])
-  userId Int
+
+  user   User    @relation(fields: [userId], references: [id])
+  userId String
+
+  logs   Log[]   @relation("BuildLogs") // ✅ This line was missing 
+  
+  @@index([gpu, price])
 }
 
 model Log {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   action    String
   timestamp DateTime @default(now())
+
   user      User     @relation(fields: [userId], references: [id])
-  userId    Int
+  userId    String
+
+  build     Build?   @relation("BuildLogs", fields: [buildId], references: [id])
+  buildId   String?
 }
 
 model MonitoredUser {
-  id     Int    @id @default(autoincrement())
-  userId Int    @unique
-  reason String
-  user   User   @relation("MonitoredRelation", fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  reason    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
 }
 
+enum Role {
+  USER
+  ADMIN
+}

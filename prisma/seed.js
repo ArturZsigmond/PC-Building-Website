@@ -1,46 +1,65 @@
-// prisma/seed.js
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
 const { faker } = require('@faker-js/faker');
 
-const CPUS = ["Intel", "AMD"];
-const RAMS = ["16GB", "32GB"];
-const GPUS = ["RTX 5080", "RTX 5090", "GTX 690"];
-const CASES = ["case1.jpg", "case2.jpg", "case3.jpg", "case4.jpg"];
-const prices = {
-  Intel: 565, AMD: 550,
-  "16GB": 200, "32GB": 375,
-  "RTX 5090": 2100, "RTX 5080": 1595, "GTX 690": 999,
-  "case1.jpg": 200, "case2.jpg": 235, "case3.jpg": 185, "case4.jpg": 230,
-};
+const prisma = new PrismaClient();
 
 async function main() {
-  const user = await prisma.user.upsert({
-    where: { email: "test@example.com" },
-    update: {},
-    create: { email: "test@example.com", password: "test1234", role: "user" },
-  });
+  console.log("🌱 Starting seed...");
 
-  const builds = Array.from({ length: 100000 }).map(() => {
-    const cpu = faker.helpers.arrayElement(CPUS);
-    const ram = faker.helpers.arrayElement(RAMS);
-    const gpu = faker.helpers.arrayElement(GPUS);
-    const pcCase = faker.helpers.arrayElement(CASES);
-    return {
-      cpu,
-      ram,
-      gpu,
-      case: pcCase,
-      price: prices[cpu] + prices[ram] + prices[gpu] + prices[pcCase],
-      userId: user.id,
-    };
-  });
+  const users = [];
 
-  console.log("📦 Seeding 100k builds...");
-  for (let i = 0; i < builds.length; i += 1000) {
-    await prisma.build.createMany({ data: builds.slice(i, i + 1000) });
+  for (let i = 0; i < 10000; i++) {
+    users.push({
+      email: `user${i}_${faker.internet.email().toLowerCase()}`,
+      password: faker.internet.password(12),
+    });
   }
-  console.log("✅ Seed complete.");
+
+  const createdUsers = [];
+
+  for (let i = 0; i < users.length; i += 1000) {
+    const batch = users.slice(i, i + 1000);
+    const result = await prisma.$transaction(
+      batch.map(user => prisma.user.create({ data: user }))
+    );
+    createdUsers.push(...result);
+    console.log(`✅ Seeded ${createdUsers.length} users so far`);
+  }
+
+  const builds = [];
+  const cpuOptions = ['Intel', 'AMD'];
+  const gpuOptions = ['RTX 5080', 'RTX 5090', 'GTX 690'];
+  const caseOptions = ['Case 1', 'Case 2', 'Case 3', 'Case 4'];
+  const ramOptions = ['16GB', '32GB'];
+
+  for (let i = 0; i < 100000; i++) {
+    const userId = createdUsers[Math.floor(Math.random() * createdUsers.length)].id;
+    builds.push({
+      cpu: faker.helpers.arrayElement(cpuOptions),
+      gpu: faker.helpers.arrayElement(gpuOptions),
+      ram: faker.helpers.arrayElement(ramOptions),
+      case: faker.helpers.arrayElement(caseOptions),
+      price: faker.number.int({ min: 1000, max: 5000 }),
+      userId,
+    });
+  }
+
+  for (let i = 0; i < builds.length; i += 1000) {
+    const batch = builds.slice(i, i + 1000);
+    await prisma.$transaction(
+      batch.map(build => prisma.build.create({ data: build }))
+    );
+    console.log(`🖥️ Seeded ${i + batch.length} builds`);
+  }
+
+  console.log("🌱 Seed complete.");
 }
 
-main().catch(console.error).finally(() => prisma.$disconnect());
+main()
+  .catch((e) => {
+    console.error("❌ Seed failed", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

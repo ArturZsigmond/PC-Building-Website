@@ -6,11 +6,13 @@ const { WebSocketServer } = require('ws');
 const path = require('path');
 const fs = require('fs');
 
-// ⬇️ NEW: Auth routes
+// ⬇️ NEW: Routes
 const authRoutes = require('./routes/auth');
-
-// Existing builds route (will be upgraded next)
+const adminRoutes = require('./routes/admin'); // ✅ ADD THIS
 const { router: buildsRoutes, builds } = require('./builds');
+const statsRouter = require("./stats"); // adjust path if needed
+
+
 
 const app = express();
 const server = http.createServer(app);
@@ -20,14 +22,14 @@ app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
 
-// ⬇️ NEW: Auth routes mounted here
-app.use('/api', authRoutes);
+// API routes
+app.use('/api', authRoutes);               // Auth endpoints
+app.use('/api/admin', adminRoutes);        // ✅ Admin-only endpoints
+app.use('/api/builds', buildsRoutes);      // PC builds
 
 // Static file serving
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Build routes
-app.use('/api/builds', buildsRoutes);
+app.use("/api/stats", statsRouter.router);
 
 // File upload route
 app.post('/api/upload', (req, res) => {
@@ -64,6 +66,9 @@ server.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
 
+// Background job
+require("./monitor");
+
 // WebSocket Setup
 const wss = new WebSocketServer({ server });
 
@@ -91,13 +96,12 @@ function generateRandomBuild() {
   const ram = RAMS[Math.floor(Math.random() * RAMS.length)];
   const gpu = GPUS[Math.floor(Math.random() * GPUS.length)];
   const pcCase = CASES[Math.floor(Math.random() * CASES.length)];
-
   const price = prices[cpu] + prices[ram] + prices[gpu] + prices[pcCase];
   return { cpu, ram, gpu, case: pcCase, price };
 }
 
-// ⏱️ Broadcast random builds every 5s
-setInterval(() => {
+// Broadcast builds every 5 seconds
+/*setInterval(() => {
   const build = generateRandomBuild();
   builds.push(build);
   const json = JSON.stringify(build);
@@ -107,4 +111,4 @@ setInterval(() => {
       client.send(json);
     }
   });
-}, 5000);
+}, 5000);*/
