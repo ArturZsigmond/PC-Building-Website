@@ -14,6 +14,7 @@ const statsRouter = require("./stats"); // adjust path if needed
 
 
 
+
 const app = express();
 const server = http.createServer(app);
 
@@ -26,6 +27,7 @@ app.use(fileUpload());
 app.use('/api', authRoutes);               // Auth endpoints
 app.use('/api/admin', adminRoutes);        // ✅ Admin-only endpoints
 app.use('/api/builds', buildsRoutes);      // PC builds
+
 
 // Static file serving
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -67,7 +69,9 @@ server.listen(PORT, () => {
 });
 
 // Background job
-require("./monitor");
+const { router: monitoredRouter } = require("./monitor");
+app.use("/api/monitored", monitoredRouter);
+
 
 // WebSocket Setup
 const wss = new WebSocketServer({ server });

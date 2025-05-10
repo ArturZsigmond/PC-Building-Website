@@ -1,61 +1,97 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+
+interface MonitoredUser {
+  email: string;
+  reason: string;
+}
+
+interface GpuStat {
+  gpu: string;
+  avgPrice: number;
+  count: number;
+}
 
 export default function AdminPage() {
-  const [users, setUsers] = useState<any[]>([]);
-  const [error, setError] = useState("");
-  const router = useRouter();
+  const [monitored, setMonitored] = useState<MonitoredUser[]>([]);
+  const [gpuStats, setGpuStats] = useState<GpuStat[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login_page?admin=true");
-      return;
-    }
 
-    const [, payload] = token.split(".");
-    const decoded = JSON.parse(atob(payload));
-
-    if (decoded.role !== "ADMIN") {
-      alert("Unauthorized");
-      router.push("/login_page");
-      return;
-    }
-
+    // Fetch monitored users safely
     fetch("http://localhost:4000/api/monitored", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(async (res) => {
-        if (!res.ok) throw new Error("Failed to load monitored users");
-        const data = await res.json();
-        setUsers(data);
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch monitored users");
+        return res.json();
       })
+      .then(setMonitored)
       .catch((err) => {
-        console.error(err);
-        setError("Failed to fetch monitored users.");
+        console.error("Monitored fetch error:", err.message);
+      });
+
+    // Fetch GPU stats safely
+    fetch("http://localhost:4000/api/stats/heavy", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch GPU stats");
+        return res.json();
+      })
+      .then(setGpuStats)
+      .catch((err) => {
+        console.error("GPU stats fetch error:", err.message);
       });
   }, []);
 
   return (
-    <div className="p-8 text-white">
-      <h1 className="text-3xl mb-6 text-purple-400">Monitored Users</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      {users.length === 0 ? (
-        <p className="text-gray-400">No suspicious activity detected.</p>
-      ) : (
-        <ul className="space-y-2">
-          {users.map((user) => (
-            <li key={user.id} className="bg-gray-800 p-4 rounded">
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Reason:</strong> {user.reason}</p>
-              <p><strong>User ID:</strong> {user.id}</p>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="min-h-screen bg-gray-900 text-white p-8 space-y-16">
+      <h1 className="text-4xl text-purple-400 mb-2">Admin Dashboard</h1>
+
+      {/* GPU Stats */}
+      <section>
+        <h2 className="text-2xl text-purple-300 mb-4">GPU Build Statistics</h2>
+        <table className="w-full bg-gray-800 rounded-md overflow-hidden">
+          <thead className="bg-gray-700 text-left">
+            <tr>
+              <th className="p-3">GPU</th>
+              <th className="p-3">Average Price</th>
+              <th className="p-3">Build Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {gpuStats.map((stat) => (
+              <tr key={stat.gpu} className="border-t border-gray-700">
+                <td className="p-3">{stat.gpu}</td>
+                <td className="p-3">${stat.avgPrice}</td>
+                <td className="p-3">{stat.count}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      {/* Monitored Users */}
+      <section>
+        <h2 className="text-2xl text-purple-300 mb-4">Monitored Users</h2>
+        {monitored.length === 0 ? (
+          <p className="text-gray-400">No suspicious users detected.</p>
+        ) : (
+          <div className="space-y-4">
+            {monitored.map((user, i) => (
+              <div
+                key={i}
+                className="p-4 border border-purple-500 rounded-md bg-gray-800 shadow-md"
+              >
+                <p><strong>Email:</strong> {user.email}</p>
+                <p><strong>Reason:</strong> {user.reason}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

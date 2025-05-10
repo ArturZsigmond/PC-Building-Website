@@ -1,12 +1,13 @@
+const express = require("express");
 const prisma = require("../prisma/client");
 
-
-const ACTION_LIMIT = 20; // adjust as needed
-const CHECK_INTERVAL_MS = 60_000; // every 60s
+const router = express.Router();
+const ACTION_LIMIT = 20;
+const CHECK_INTERVAL_MS = 60_000;
 
 async function monitorSuspiciousUsers() {
   try {
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000); // past 24h
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     const actions = await prisma.log.groupBy({
       by: ["userId"],
@@ -38,5 +39,27 @@ async function monitorSuspiciousUsers() {
   }
 }
 
-// Start periodic check
+// API endpoint to get monitored users with email
+router.get("/", async (req, res) => {
+  try {
+    const entries = await prisma.monitoredUser.findMany({
+      include: {
+        user: true,
+      },
+    });
+
+    const formatted = entries.map(entry => ({
+      email: entry.user.email,
+      reason: entry.reason,
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    console.error("Failed to fetch monitored users", err);
+    res.status(500).json({ error: "Failed to fetch monitored users" });
+  }
+});
+
 setInterval(monitorSuspiciousUsers, CHECK_INTERVAL_MS);
+
+module.exports = { router };
