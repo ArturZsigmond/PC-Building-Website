@@ -39,7 +39,7 @@ async function monitorSuspiciousUsers() {
   }
 }
 
-// API endpoint to get monitored users with email
+
 router.get("/", async (req, res) => {
   try {
     const entries = await prisma.monitoredUser.findMany({

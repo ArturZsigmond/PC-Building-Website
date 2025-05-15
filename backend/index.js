@@ -59,25 +59,25 @@ app.get("/uploads", (req, res) => {
   });
 });
 
-// Logging middleware
+
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
 
-// Start server
+
 const PORT = 4000;
 server.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
 
-// Background job
+
 const { router: monitoredRouter } = require("./monitor");
 app.use("/api/monitored", monitoredRouter);
 app.use("/api/logs", logsRouter);
 
 
-// WebSocket Setup
+
 const wss = new WebSocketServer({ server });
 
 const CPUS = ["Intel", "AMD"];
