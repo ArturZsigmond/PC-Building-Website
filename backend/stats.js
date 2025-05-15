@@ -4,7 +4,6 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const router = express.Router();
 
-// GET /api/stats/heavy - Complex stats (e.g. avg price per GPU)
 router.get("/heavy", async (req, res) => {
   try {
     const builds = await prisma.build.groupBy({
