@@ -10,7 +10,7 @@ router.use(auth);
 
 router.get("/logs", async (req, res) => {
   try {
-    // Make sure only ADMINs can access this endpoint
+  
     if (req.user.role !== "ADMIN") {
       return res.status(403).json({ error: "Access denied" });
     }
