@@ -1,4 +1,5 @@
-import { getQueue, clearQueue, addToQueue, QueuedOperation } from "./offlineQueue";
+import { getQueue, clearQueue, QueuedOperation } from "./offlineQueue";
+
 
 export async function syncOfflineQueue() {
   const queue = getQueue();
@@ -37,10 +38,11 @@ export async function syncOfflineQueue() {
           },
         });
       }
-    } catch (err) {
-      console.warn("Offline queue sync failed for operation", op);
-      remainingQueue.push(op); // re-queue failed operations
-    }
+} catch (err) {
+  console.warn("Offline queue sync failed", err, op);
+  remainingQueue.push(op);
+}
+
   }
 
   // Store any operations that failed again

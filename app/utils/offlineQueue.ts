@@ -2,11 +2,19 @@ const QUEUE_KEY = "offlineQueue";
 
 export type OperationType = "add" | "update" | "delete";
 
+export interface BuildData {
+  processor: string;
+  ram: string;
+  gpu: string;
+  case: string;
+}
+
 export interface QueuedOperation {
   type: OperationType;
-  data?: any;
-  id?: string; // ✅ changed from `index` to `id`
+  data?: BuildData;
+  id?: string;
 }
+
 
 export function addToQueue(operation: QueuedOperation) {
   if (!operation || !operation.type || (operation.type !== "delete" && !operation.data)) {

@@ -16,14 +16,14 @@ async function syncQueue() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(op.data),
         });
-      } else if (op.type === "update" && op.index !== undefined) {
-        await fetch(`http://localhost:4000/api/builds/${op.index}`, {
+      } else if (op.type === "update" && op.id !== undefined) {
+        await fetch(`http://localhost:4000/api/builds/${op.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(op.data),
         });
-      } else if (op.type === "delete" && op.index !== undefined) {
-        await fetch(`http://localhost:4000/api/builds/${op.index}`, {
+      } else if (op.type === "delete" && op.id !== undefined) {
+        await fetch(`http://localhost:4000/api/builds/${op.id}`, {
           method: "DELETE",
         });
       }
