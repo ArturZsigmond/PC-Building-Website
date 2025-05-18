@@ -2,18 +2,20 @@
   "name": "my-pc-builder-app",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "test": "jest --coverage",
-    "seed": "node prisma/seed.js"
-  },
+ "scripts": {
+  "dev": "next dev --turbopack",
+  "build": "next build",
+  "start": "concurrently \"next start\" \"node backend/index.js\"",
+  "lint": "next lint",
+  "test": "jest --coverage",
+  "seed": "node prisma/seed.js"
+}
+,
   "dependencies": {
     "@faker-js/faker": "^9.7.0",
     "@prisma/client": "^6.7.0",
     "bcrypt": "^5.1.1",
+    "concurrently": "^9.1.2",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "next": "15.2.2",
