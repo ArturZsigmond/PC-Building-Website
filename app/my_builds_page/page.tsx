@@ -4,9 +4,10 @@ import BuildCard from "../components/BuildCard";
 import GPUChart from "../components/GPUChart";
 import { addToQueue } from "../utils/offlineQueue";
 import { syncOfflineQueue } from "../utils/syncQueue";
+import type { Build} from "../types/Build";
 
 export default function MyBuilds() {
-  const [builds, setBuilds] = useState<any[]>([]);
+  const [builds, setBuilds] = useState<Build[]>([]);
   const [cpuFilter, setCpuFilter] = useState<string>("");
   const [gpuFilter, setGpuFilter] = useState<string>("");
   const [sort, setSort] = useState<string>("");
@@ -69,7 +70,7 @@ export default function MyBuilds() {
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [currentPage, buildsPerPage, sortedBuilds.length]);
+  }, [currentPage, buildsPerPage, sortedBuilds.length, totalPages]);
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:4000");
@@ -101,7 +102,7 @@ export default function MyBuilds() {
     setBuilds(builds.filter((b) => b.id !== id));
   };
 
-  const handleUpdate = async (id: string, updatedBuild: any) => {
+  const handleUpdate = async (id: string, updatedBuild: Build) => {
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(`http://localhost:4000/api/builds/${id}`, {

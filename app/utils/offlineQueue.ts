@@ -3,7 +3,7 @@ const QUEUE_KEY = "offlineQueue";
 export type OperationType = "add" | "update" | "delete";
 
 export interface BuildData {
-  processor: string;
+  cpu: string;
   ram: string;
   gpu: string;
   case: string;

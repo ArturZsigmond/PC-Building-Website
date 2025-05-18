@@ -1,7 +1,8 @@
 "use client";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import type { Build, BuildData } from "../types/Build";
 
-export default function StatsChart({ builds }: { builds: any[] }) {
+export default function StatsChart({ builds }: { builds: BuildData[] }) {
   // Count builds per GPU
   const data = [
     { gpu: "RTX 5080", count: builds.filter(b => b.gpu === "RTX 5080").length },
