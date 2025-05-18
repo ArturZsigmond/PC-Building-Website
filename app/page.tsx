@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-black text-white px-4">
-      <h1 className="text-4xl mb-6 text-purple-400 font-bold">ARTUR'S PC BUILDER</h1>
+      <h1 className="text-4xl mb-6 text-purple-400 font-bold">ARTUR&#39;S PC BUILDER</h1>
       <h2 className="text-2xl mb-4 text-purple-300 text-center">
         Welcome to the Ultimate PC Building Experience!
       </h2>
