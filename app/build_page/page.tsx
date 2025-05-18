@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { addToQueue } from "../utils/offlineQueue";
-
+import Image from "next/image";
 export default function BuildPC() {
   const router = useRouter();
   const [cpu, setCpu] = useState("");
@@ -125,7 +125,7 @@ export default function BuildPC() {
           {["case1.jpg", "case2.jpg", "case3.jpg", "case4.jpg"].map((img) => (
             <img
               key={img}
-              src={`/${img}`}
+              src={`/${img}`} alt=""
               className={`w-20 cursor-pointer ${
                 pcCase === img ? "border-4 border-purple-400" : ""
               }`}
@@ -146,7 +146,7 @@ export default function BuildPC() {
       <div className="w-1/2 flex flex-col items-center">
         {lastSelectedPart ? (
           <img
-            src={lastSelectedPart}
+            src={lastSelectedPart} alt=""
             className="w-1/2 max-w-150 border-4 border-purple-400 p-2 rounded-md shadow-lg"
           />
         ) : (

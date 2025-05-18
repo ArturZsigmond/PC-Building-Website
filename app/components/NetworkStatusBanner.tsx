@@ -28,7 +28,7 @@ async function syncQueue() {
         });
       }
     } catch (err) {
-      console.error(" Sync failed for", op);
+      console.error(" Sync failed for", op, err);
       return;
     }
   }

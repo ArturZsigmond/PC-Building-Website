@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import type {  Build} from "../types/Build";
+//import Image from "next/image";
 
-export default function BuildCard({ build, onDelete, onUpdate, highlight }: { build: any; onDelete: (id: number) => void; onUpdate: (updatedBuild: any) => void; highlight?: string }) {
+export default function BuildCard({ build, onDelete, onUpdate, highlight }: { build: Build; onDelete: (id: string) => void; onUpdate: (updatedBuild: Build) => void; highlight?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [cpu, setCpu] = useState(build.cpu);
   const [ram, setRam] = useState(build.ram);
@@ -27,7 +29,7 @@ export default function BuildCard({ build, onDelete, onUpdate, highlight }: { bu
   return (
     <div className={`relative group bg-gray-900 p-4 rounded-lg shadow-lg text-white transition-transform duration-300 hover:scale-105 max-w-lg mx-auto border-4 ${borderClass}`}>
       <div className="relative w-full">
-        <img src={`/${build.case}`} className="opacity-100 group-hover:opacity-0 transition-opacity duration-300 w-full h-48 object-cover rounded-md" />
+        <img src={`/${build.case}`} alt="" className="opacity-100 group-hover:opacity-0 transition-opacity duration-300 w-full h-48 object-cover rounded-md" />
 
         {/* Specs appear on hover */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center bg-black/80 text-white p-4">

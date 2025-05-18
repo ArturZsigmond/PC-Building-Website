@@ -122,15 +122,16 @@ router.delete("/:id", async (req, res) => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    await prisma.build.delete({ where: { id } });
-
     await prisma.log.create({
       data: {
         action: "DELETE",
+        timestamp: new Date(),
         build: { connect: { id } },
         user: { connect: { id: req.user.userId } },
       },
     });
+
+    await prisma.build.delete({ where: { id } });
 
     res.json({ message: "Deleted" });
   } catch (err) {
@@ -138,5 +139,6 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete build." });
   }
 });
+
 
 module.exports = { router };

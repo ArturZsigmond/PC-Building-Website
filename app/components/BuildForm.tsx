@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
+import type {BuildData } from "../types/Build";
 
-export default function BuildForm({ onSubmit }: { onSubmit: (data: any) => void }) {
+export default function BuildForm({ onSubmit }: { onSubmit: (data: BuildData) => void }) {
   const [cpu, setCpu] = useState("");
   const [ram, setRam] = useState("");
   const [gpu, setGpu] = useState("");
@@ -69,7 +70,7 @@ export default function BuildForm({ onSubmit }: { onSubmit: (data: any) => void 
           {["case1.jpg", "case2.jpg", "case3.jpg", "case4.jpg"].map((img) => (
             <img
               key={img}
-              src={`/${img}`}
+              src={`/${img}`} alt="" 
               className={`w-20 cursor-pointer ${pcCase === img ? "border-4 border-purple-400" : ""}`}
               onClick={() => handleSelection("case", img)}
             />
@@ -88,7 +89,7 @@ export default function BuildForm({ onSubmit }: { onSubmit: (data: any) => void 
       {/* Right Side - Last Selected Image Preview */}
       <div className="w-1/2 flex flex-col items-center">
         {lastSelectedPart ? (
-          <img src={lastSelectedPart} className="w-48 border-4 border-purple-400 p-2 rounded-md shadow-lg" />
+          <img src={lastSelectedPart} alt="" className="w-48 border-4 border-purple-400 p-2 rounded-md shadow-lg" />
         ) : (
           <p className="text-gray-400">Select a part to preview</p>
         )}

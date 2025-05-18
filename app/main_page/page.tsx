@@ -9,7 +9,7 @@ export default function MainPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) router.push("/login_page");
-  }, []);
+  }, [router]);
 
   const explode = async () => {
     const token = localStorage.getItem("token");

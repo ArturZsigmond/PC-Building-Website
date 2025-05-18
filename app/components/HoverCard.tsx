@@ -1,9 +1,10 @@
 "use client";
+import type { BuildData } from "../types/Build";
 
-export default function HoverCard({ image, specs }: { image: string; specs: any }) {
+export default function HoverCard({ image, specs }: { image: string; specs:  BuildData}) {
   return (
     <div className="relative group w-48">
-      <img src={image} className="opacity-100 group-hover:opacity-0 transition-opacity duration-300 w-full" />
+      <img src={image} alt="" className="object-cover opacity-100 group-hover:opacity-0 transition-opacity duration-300 w-full" />
       
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 bg-black text-white">
         <h2 className="text-lg font-bold">PC Specs</h2>
