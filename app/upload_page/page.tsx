@@ -20,9 +20,9 @@ export default function UploadPage() {
       });
 
       if (!res.ok) throw new Error("Upload failed");
-      setUploadStatus("✅ Upload successful!");
-    } catch (err) {
-      setUploadStatus("❌ Upload failed. Check server or file size.");
+      setUploadStatus(" Upload successful!");
+    } catch {
+      setUploadStatus(" Upload failed. Check server or file size.");
     }
   };
 
