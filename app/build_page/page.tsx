@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { addToQueue } from "../utils/offlineQueue";
-import Image from "next/image";
 export default function BuildPC() {
   const router = useRouter();
   const [cpu, setCpu] = useState("");
