@@ -13,7 +13,7 @@ export async function syncOfflineQueue() {
   for (const op of queue) {
     try {
       if (op.type === "add") {
-        await fetch("http://localhost:4000/api/builds", {
+        await fetch("{process.env.NEXT_PUBLIC_API_URL}/api/builds", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export async function syncOfflineQueue() {
           body: JSON.stringify(op.data),
         });
       } else if (op.type === "update" && op.id !== undefined) {
-        await fetch(`http://localhost:4000/api/builds/${op.id}`, {
+        await fetch(`{process.env.NEXT_PUBLIC_API_URL}/api/builds/${op.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export async function syncOfflineQueue() {
           body: JSON.stringify(op.data),
         });
       } else if (op.type === "delete" && op.id !== undefined) {
-        await fetch(`http://localhost:4000/api/builds/${op.id}`, {
+        await fetch(`{process.env.NEXT_PUBLIC_API_URL}/api/builds/${op.id}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,

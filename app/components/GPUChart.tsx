@@ -17,7 +17,7 @@ export default function GPUChart() {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:4000/api/builds/stats", {
+        const res = await fetch("{process.env.NEXT_PUBLIC_API_URL}/api/builds/stats", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

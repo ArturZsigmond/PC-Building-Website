@@ -27,21 +27,21 @@ export default function AdminPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:4000/api/monitored", {
+    fetch("{process.env.NEXT_PUBLIC_API_URL}/api/monitored", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then(setMonitored)
       .catch((err) => console.error("Monitored fetch error:", err.message));
 
-    fetch("http://localhost:4000/api/stats/heavy", {
+    fetch("{process.env.NEXT_PUBLIC_API_URL}/api/stats/heavy", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then(setGpuStats)
       .catch((err) => console.error("GPU stats fetch error:", err.message));
 
-    fetch("http://localhost:4000/api/logs", {
+    fetch("{process.env.NEXT_PUBLIC_API_URL}/api/logs", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

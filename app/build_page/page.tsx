@@ -65,7 +65,7 @@ export default function BuildPC() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/builds", {
+      const res = await fetch("{process.env.NEXT_PUBLIC_API_URL}/api/builds", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
