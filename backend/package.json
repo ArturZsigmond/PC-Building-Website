@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "npx prisma generate",
+    "build": "", 
     "start": "node index.js",
-    "postinstall": "prisma generate",
+    "postinstall": "npx prisma generate",
     "test": "jest",
     "test:coverage": "jest --coverage"
   },
