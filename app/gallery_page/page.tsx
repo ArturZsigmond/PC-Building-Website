@@ -7,7 +7,7 @@ export default function GalleryPage() {
   const [files, setFiles] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch("{process.env.NEXT_PUBLIC_API_URL}/uploads")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/uploads`)
       .then((res) => res.json())
       .then((data) => setFiles(data.files || []));
   }, []);
@@ -23,11 +23,11 @@ export default function GalleryPage() {
           {files.map((file) => (
             <div key={file} className="bg-gray-800 p-4 rounded shadow-md">
               <video controls className="w-full mb-2">
-                <source src={`{process.env.NEXT_PUBLIC_API_URL}/uploads/${file}`} />
+                <source src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${file}`} />
                 Your browser does not support video playback.
               </video>
               <a
-                href={`{process.env.NEXT_PUBLIC_API_URL}/uploads/${file}`}
+                href={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${file}`}
                 download
                 className="text-blue-400 underline"
               >
