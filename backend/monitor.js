@@ -1,5 +1,5 @@
 const express = require("express");
-const prisma = require("../prisma/client");
+const prisma = require("@prisma/client");
 
 const router = express.Router();
 const ACTION_LIMIT = 20;
