@@ -1,5 +1,6 @@
 const express = require("express");
-const prisma = require("@prisma/client");
+const { PrismaClient } = require("@prisma/client"); // ✅ Correct import
+const prisma = new PrismaClient();                  // ✅ Instantiate client
 
 const router = express.Router();
 const ACTION_LIMIT = 20;
@@ -7,7 +8,7 @@ const CHECK_INTERVAL_MS = 60_000;
 
 async function monitorSuspiciousUsers() {
   try {
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24h ago
 
     const actions = await prisma.log.groupBy({
       by: ["userId"],
@@ -38,7 +39,6 @@ async function monitorSuspiciousUsers() {
     console.error("Monitoring error:", err);
   }
 }
-
 
 router.get("/", async (req, res) => {
   try {
