@@ -73,7 +73,8 @@ export default function MyBuilds() {
   }, [currentPage, buildsPerPage, sortedBuilds.length, totalPages]);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:4000");
+   const socket = new WebSocket(`${process.env.NEXT_PUBLIC_API_URL?.replace(/^http/, "ws")}`);
+
 
     socket.onmessage = (event) => {
       const newBuild = JSON.parse(event.data);
