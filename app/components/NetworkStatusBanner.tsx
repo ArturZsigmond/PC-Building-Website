@@ -11,19 +11,19 @@ async function syncQueue() {
   for (const op of queue) {
     try {
       if (op.type === "add") {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/builds`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/builds`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(op.data),
         });
       } else if (op.type === "update" && op.id !== undefined) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/builds/${op.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/builds/${op.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(op.data),
         });
       } else if (op.type === "delete" && op.id !== undefined) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/builds/${op.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/builds/${op.id}`, {
           method: "DELETE",
         });
       }

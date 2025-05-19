@@ -31,7 +31,7 @@ export default function MainPage() {
     });
 
     for (const build of payloads) {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/builds`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/builds`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

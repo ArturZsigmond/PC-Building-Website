@@ -22,7 +22,7 @@ export default function MyBuilds() {
     const fetchBuilds = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/builds`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/builds`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -87,7 +87,7 @@ export default function MyBuilds() {
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/builds/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/builds/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -106,7 +106,7 @@ export default function MyBuilds() {
   const handleUpdate = async (id: string, updatedBuild: Build) => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/builds/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/builds/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
