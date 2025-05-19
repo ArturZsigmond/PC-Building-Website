@@ -1,10 +1,12 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const prisma = require("@prisma/client");
+const { PrismaClient } = require("@prisma/client"); // ✅ Correct import
+const prisma = new PrismaClient(); // ✅ Instantiate client
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
+
  // Use env in production!
 
 // REGISTER
