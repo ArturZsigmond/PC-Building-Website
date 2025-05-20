@@ -56,17 +56,6 @@ export default function MainPage() {
         </button>
       </Link>
 
-      <Link href="/upload_page">
-        <button className="bg-purple-700 hover:bg-blue-700 px-6 py-3 rounded text-xl w-64">
-          Upload PC Unboxing
-        </button>
-      </Link>
-
-      <Link href="/gallery_page">
-        <button className="bg-gray-600 hover:bg-indigo-700 px-6 py-3 rounded text-xl w-64">
-          Gallery
-        </button>
-      </Link>
 
       <Link href="/build_page">
         <button className="bg-purple-700 hover:bg-purple-800 px-6 py-3 rounded text-xl w-64">
