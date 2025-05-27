@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -11,13 +12,13 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     // Build payload with optional token
-    let payload: Record<string, string> = { email, password };
+    const payload: Record<string, string> = { email, password };
     if (needs2FA) {
       payload.token = token;
     }
@@ -31,7 +32,7 @@ export default function LoginPage() {
           body: JSON.stringify(payload)
         }
       );
-      const data = await res.json();
+      const data = (await res.json()) as { needs2fa?: boolean; error?: string; token?: string };
 
       if (res.status === 206 && data.needs2fa) {
         setNeeds2FA(true);
@@ -46,10 +47,15 @@ export default function LoginPage() {
       }
 
       // Success: store token and redirect
-      localStorage.setItem("token", data.token);
-      router.push("/");
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        router.push("/");
+      } else {
+        setError("Login succeeded but no token received");
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message);
       setLoading(false);
     }
   };
@@ -60,9 +66,7 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className="bg-gray-800 p-6 rounded shadow-md space-y-4 w-80"
       >
-        <h1 className="text-2xl font-bold text-purple-400 text-center">
-          Log In
-        </h1>
+        <h1 className="text-2xl font-bold text-purple-400 text-center">Log In</h1>
 
         <div>
           <label className="block mb-1">Email</label>

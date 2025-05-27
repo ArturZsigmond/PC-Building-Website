@@ -3,15 +3,16 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { addToQueue } from "../utils/offlineQueue";
+
 export default function BuildPC() {
   const router = useRouter();
-  const [cpu, setCpu] = useState("");
-  const [ram, setRam] = useState("");
-  const [gpu, setGpu] = useState("");
-  const [pcCase, setPcCase] = useState("");
+  const [cpu, setCpu] = useState<string>("");
+  const [ram, setRam] = useState<string>("");
+  const [gpu, setGpu] = useState<string>("");
+  const [pcCase, setPcCase] = useState<string>("");
   const [lastSelectedPart, setLastSelectedPart] = useState<string | null>(null);
 
-  const prices: { [key: string]: number } = {
+  const prices: Record<string, number> = {
     Intel: 565,
     AMD: 550,
     "RTX 5090": 2100,
@@ -25,7 +26,7 @@ export default function BuildPC() {
     "case4.jpg": 230,
   };
 
-  const selectedImages: { [key: string]: string } = {
+  const selectedImages: Record<string, string> = {
     Intel: "/intel.jpg",
     AMD: "/amd.jpg",
     "16GB": "/16.jpg",
@@ -39,7 +40,7 @@ export default function BuildPC() {
     "case4.jpg": "/case4.jpg",
   };
 
-  const handleSelection = (type: string, value: string) => {
+  const handleSelection = (type: "cpu" | "ram" | "gpu" | "case", value: string) => {
     if (!value) return;
     setLastSelectedPart(selectedImages[value] || null);
 
@@ -75,9 +76,13 @@ export default function BuildPC() {
       });
 
       if (!res.ok) throw new Error("Failed to save");
-    } catch {
+    } catch (err: unknown) {
+      // Queue offline if network/server fails
       addToQueue({ type: "add", data: newBuild });
-      alert("You're offline or the server is down. Your build will sync later.");
+      const message = err instanceof Error ? err.message : String(err);
+      alert(
+        `You're offline or the server is down. Your build will sync later. (${message})`
+      );
     }
 
     router.push("/my_builds_page");
@@ -92,6 +97,7 @@ export default function BuildPC() {
         <select
           className="p-2 bg-gray-700 text-white rounded"
           onChange={(e) => handleSelection("cpu", e.target.value)}
+          value={cpu}
         >
           <option value="">Select CPU</option>
           <option value="Intel">Intel</option>
@@ -102,6 +108,7 @@ export default function BuildPC() {
         <select
           className="p-2 bg-gray-700 text-white rounded"
           onChange={(e) => handleSelection("ram", e.target.value)}
+          value={ram}
         >
           <option value="">Select RAM</option>
           <option value="16GB">16GB</option>
@@ -112,6 +119,7 @@ export default function BuildPC() {
         <select
           className="p-2 bg-gray-700 text-white rounded"
           onChange={(e) => handleSelection("gpu", e.target.value)}
+          value={gpu}
         >
           <option value="">Select GPU</option>
           <option value="RTX 5080">RTX 5080</option>
@@ -121,16 +129,19 @@ export default function BuildPC() {
 
         <label>Case:</label>
         <div className="flex space-x-4">
-          {["case1.jpg", "case2.jpg", "case3.jpg", "case4.jpg"].map((img) => (
-            <img
-              key={img}
-              src={`/${img}`} alt=""
-              className={`w-20 cursor-pointer ${
-                pcCase === img ? "border-4 border-purple-400" : ""
-              }`}
-              onClick={() => handleSelection("case", img)}
-            />
-          ))}
+          {Object.keys(selectedImages)
+            .filter((img) => img.includes("case"))
+            .map((img) => (
+              <img
+                key={img}
+                src={selectedImages[img]}
+                alt={img}
+                className={`w-20 cursor-pointer ${
+                  pcCase === img ? "border-4 border-purple-400" : ""
+                }`}
+                onClick={() => handleSelection("case", img)}
+              />
+            ))}
         </div>
 
         <button
@@ -145,7 +156,8 @@ export default function BuildPC() {
       <div className="w-1/2 flex flex-col items-center">
         {lastSelectedPart ? (
           <img
-            src={lastSelectedPart} alt=""
+            src={lastSelectedPart}
+            alt="Selected part"
             className="w-1/2 max-w-150 border-4 border-purple-400 p-2 rounded-md shadow-lg"
           />
         ) : (
