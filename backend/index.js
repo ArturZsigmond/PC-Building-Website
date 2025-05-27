@@ -1,4 +1,3 @@
-
 const fileUpload = require('express-fileupload');
 const express = require('express');
 const cors = require('cors');
@@ -7,12 +6,13 @@ const { WebSocketServer } = require('ws');
 const path = require('path');
 const fs = require('fs');
 
-// ⬇️ NEW: Routes
+
 const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/admin'); // ✅ ADD THIS
+const adminRoutes = require('./routes/admin'); 
 const { router: buildsRoutes, builds } = require('./builds');
 const statsRouter = require("./stats"); // adjust path if needed
 const logsRouter = require("./routes/logs");
+const twoFaRoutes = require("./routes/2fa");
 
 
 
@@ -31,6 +31,7 @@ app.use(fileUpload());
 app.use('/api', authRoutes);               // Auth endpoints
 app.use('/api/admin', adminRoutes);        // ✅ Admin-only endpoints
 app.use('/api/builds', buildsRoutes);      // PC builds
+app.use("/2fa", twoFaRoutes);
 
 
 // Static file serving
