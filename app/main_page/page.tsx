@@ -1,7 +1,9 @@
 "use client";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 export default function MainPage() {
   const router = useRouter();
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
@@ -10,6 +12,9 @@ export default function MainPage() {
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [twoFaEnabled, setTwoFaEnabled] = useState<boolean>(false);
 
+  // Ensure we have a base API URL
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -17,7 +22,7 @@ export default function MainPage() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+    fetch(`${API_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -33,7 +38,7 @@ export default function MainPage() {
     }
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/2fa/setup`,
+        `${API_URL}/2fa/setup`,
         {
           method: "POST",
           headers: {
@@ -42,12 +47,12 @@ export default function MainPage() {
           },
         }
       );
-      const data = await res.json();
+      const { qrDataUrl, error } = await res.json();
       if (res.ok) {
-        setQrDataUrl(data.qrDataUrl);
+        setQrDataUrl(qrDataUrl);
         setSetupError(null);
       } else {
-        setSetupError(data.error || "Failed to setup 2FA");
+        setSetupError(error || "Failed to setup 2FA");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -63,7 +68,7 @@ export default function MainPage() {
     }
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/2fa/verify`,
+        `${API_URL}/2fa/verify`,
         {
           method: "POST",
           headers: {
@@ -73,14 +78,14 @@ export default function MainPage() {
           body: JSON.stringify({ token: totpCode }),
         }
       );
-      const data = await res.json();
-      if (res.ok && data.success) {
+      const { success, error } = await res.json();
+      if (res.ok && success) {
         setTwoFaEnabled(true);
         setQrDataUrl(null);
         setTotpCode("");
         setVerifyError(null);
       } else {
-        setVerifyError(data.error || "Invalid code");
+        setVerifyError(error || "Invalid code");
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -110,7 +115,7 @@ export default function MainPage() {
 
     for (const build of payloads) {
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/builds`,
+        `${API_URL}/builds`,
         {
           method: "POST",
           headers: {
