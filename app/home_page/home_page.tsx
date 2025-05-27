@@ -2,75 +2,114 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function HomePage() {
+export default function LoginPage() {
   const router = useRouter();
-  const [showModal, setShowModal] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
+  const [needs2FA, setNeeds2FA] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleAdminAccess = () => setShowModal(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-  const checkAdminPassword = () => {
-    if (adminPassword === "adminpass") {
-      setShowModal(false);
-      router.push("/admin_page");
-    } else {
-      alert("Incorrect password!");
+    // Build payload with optional token
+    let payload: Record<string, string> = { email, password };
+    if (needs2FA) {
+      payload.token = token;
+    }
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }
+      );
+      const data = await res.json();
+
+      if (res.status === 206 && data.needs2fa) {
+        setNeeds2FA(true);
+        setLoading(false);
+        return;
+      }
+
+      if (!res.ok) {
+        setError(data.error || "Login failed");
+        setLoading(false);
+        return;
+      }
+
+      // Success: store token and redirect
+      localStorage.setItem("token", data.token);
+      router.push("/");
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="h-screen bg-gray-900 text-white flex flex-col justify-center items-center space-y-6">
-      <h1 className="text-4xl font-bold mb-8 text-purple-400">Welcome to PC Builder</h1>
-
-      <button
-        className="bg-purple-700 hover:bg-purple-800 px-6 py-3 rounded text-xl w-64"
-        onClick={() => router.push("/login_page")}
+    <div className="h-screen bg-gray-900 text-white flex flex-col justify-center items-center">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-gray-800 p-6 rounded shadow-md space-y-4 w-80"
       >
-        Log In
-      </button>
+        <h1 className="text-2xl font-bold text-purple-400 text-center">
+          Log In
+        </h1>
 
-      <button
-        className="bg-gray-700 hover:bg-gray-800 px-6 py-3 rounded text-xl w-64"
-        onClick={() => router.push("/register_page")}
-      >
-        Register
-      </button>
-
-      <button
-        className="bg-purple-900 hover:bg-purple-700 px-6 py-3 rounded text-xl w-64"
-        onClick={handleAdminAccess}
-      >
-        Admin Mode
-      </button>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded shadow-md space-y-4">
-            <h2 className="text-xl text-purple-400">Enter Admin Password</h2>
-            <input
-              type="password"
-              className="w-full p-2 rounded text-black"
-              placeholder="Password"
-              value={adminPassword}
-              onChange={(e) => setAdminPassword(e.target.value)}
-            />
-            <div className="flex justify-end space-x-2">
-              <button
-                className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded"
-                onClick={checkAdminPassword}
-              >
-                Enter
-              </button>
-            </div>
-          </div>
+        <div>
+          <label className="block mb-1">Email</label>
+          <input
+            type="email"
+            className="w-full p-2 rounded text-black"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      )}
+
+        <div>
+          <label className="block mb-1">Password</label>
+          <input
+            type="password"
+            className="w-full p-2 rounded text-black"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        {needs2FA && (
+          <div>
+            <label className="block mb-1">2FA Code</label>
+            <input
+              type="text"
+              className="w-full p-2 rounded text-black"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              maxLength={6}
+              required
+            />
+          </div>
+        )}
+
+        {error && <p className="text-red-400 text-sm">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded text-xl"
+        >
+          {loading ? "Please wait..." : needs2FA ? "Verify & Log In" : "Log In"}
+        </button>
+      </form>
     </div>
   );
 }
