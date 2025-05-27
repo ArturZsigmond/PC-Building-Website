@@ -2,31 +2,35 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
 export default function MainPage() {
   const router = useRouter();
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-  const [totpCode, setTotpCode] = useState("");
+  const [totpCode, setTotpCode] = useState<string>("");
   const [setupError, setSetupError] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [twoFaEnabled, setTwoFaEnabled] = useState<boolean>(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) router.push("/login_page");
+    if (!token) {
+      router.push("/login_page");
+      return;
+    }
 
-    // Optionally fetch user info to set initial 2FA status
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => res.json())
-      .then(data => setTwoFaEnabled(data.twoFactorEnabled))
+      .then((res) => res.json())
+      .then((data: { twoFactorEnabled: boolean }) => setTwoFaEnabled(data.twoFactorEnabled))
       .catch(() => {});
   }, [router]);
 
   const handleSetup2FA = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return setSetupError("Not authenticated");
+    if (!token) {
+      setSetupError("Not authenticated");
+      return;
+    }
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/2fa/setup`,
@@ -34,8 +38,8 @@ export default function MainPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       const data = await res.json();
@@ -45,14 +49,18 @@ export default function MainPage() {
       } else {
         setSetupError(data.error || "Failed to setup 2FA");
       }
-    } catch (err: any) {
-      setSetupError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setSetupError(message);
     }
   };
 
   const handleVerify2FA = async () => {
     const tokenStr = localStorage.getItem("token");
-    if (!tokenStr) return setVerifyError("Not authenticated");
+    if (!tokenStr) {
+      setVerifyError("Not authenticated");
+      return;
+    }
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/2fa/verify`,
@@ -60,9 +68,9 @@ export default function MainPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenStr}`
+            Authorization: `Bearer ${tokenStr}`,
           },
-          body: JSON.stringify({ token: totpCode })
+          body: JSON.stringify({ token: totpCode }),
         }
       );
       const data = await res.json();
@@ -74,14 +82,18 @@ export default function MainPage() {
       } else {
         setVerifyError(data.error || "Invalid code");
       }
-    } catch (err: any) {
-      setVerifyError(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setVerifyError(message);
     }
   };
 
   const explode = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return alert("Not authenticated");
+    if (!token) {
+      alert("Not authenticated");
+      return;
+    }
 
     const payloads = Array.from({ length: 25 }).map(() => {
       const CPUS = ["Intel", "AMD"];
@@ -103,9 +115,9 @@ export default function MainPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(build)
+          body: JSON.stringify(build),
         }
       );
     }
@@ -115,16 +127,24 @@ export default function MainPage() {
 
   return (
     <div className="h-screen bg-gray-900 text-white flex flex-col items-center p-6 space-y-6">
-      <h1 className="text-4xl font-bold text-purple-400">Welcome to your Dashboard</h1>
+      <h1 className="text-4xl font-bold text-purple-400">
+        Welcome to your Dashboard
+      </h1>
 
       {/* 2FA Section */}
       <div className="w-full max-w-md p-4 bg-gray-800 rounded space-y-4">
         {twoFaEnabled ? (
-          <p className="text-green-400">✅ Two-Factor Authentication is enabled.</p>
+          <p className="text-green-400">
+            ✅ Two-Factor Authentication is enabled.
+          </p>
         ) : qrDataUrl ? (
           <>
             <p>Scan this QR code with your Authenticator app:</p>
-            <img src={qrDataUrl} alt="2FA QR Code" className="mx-auto" />
+            <img
+              src={qrDataUrl}
+              alt="2FA QR Code"
+              className="mx-auto"
+            />
             <div className="flex flex-col">
               <label>Enter 6-digit code:</label>
               <input
