@@ -9,13 +9,17 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(uuid())
-  email        String         @unique
-  password     String
-  role         Role           @default(USER)
-  builds       Build[]
-  logs         Log[]
-  monitoredBy  MonitoredUser?
+  id                   String         @id @default(uuid())
+  email                String         @unique
+  password             String
+  role                 Role           @default(USER)
+  builds               Build[]
+  logs                 Log[]
+  monitoredBy          MonitoredUser?
+
+  // 2FA fields
+  twoFactorSecret      String?        // stores the TOTP secret in base32
+  twoFactorEnabled     Boolean        @default(false)
 }
 
 model Build {

@@ -1,6 +1,6 @@
 const express = require("express");
-const { PrismaClient } = require("@prisma/client"); // ✅ Correct import
-const prisma = new PrismaClient();                  // ✅ Instantiate client
+const { PrismaClient } = require("@prisma/client"); //  Correct import
+const prisma = new PrismaClient();                  //  Instantiate client
 
 const router = express.Router();
 const ACTION_LIMIT = 20;
