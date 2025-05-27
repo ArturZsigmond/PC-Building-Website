@@ -2,15 +2,14 @@
   "name": "my-pc-builder-app",
   "version": "0.1.0",
   "private": true,
- "scripts": {
-  "dev": "next dev --turbopack",
-  "build": "next build",
-  "start": "next start -p $PORT",
-  "lint": "next lint",
-  "test": "jest --coverage",
-  "seed": "node prisma/seed.js"
-}
-,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start -p $PORT",
+    "lint": "next lint",
+    "test": "jest --coverage",
+    "seed": "node prisma/seed.js"
+  },
   "dependencies": {
     "@faker-js/faker": "^9.7.0",
     "@prisma/client": "^6.7.0",
@@ -19,9 +18,11 @@
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "next": "15.2.2",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.1",
+    "speakeasy": "^2.0.0",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
